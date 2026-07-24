@@ -1,6 +1,6 @@
 V1 (kimi-code / interactive-dev day one)
-  Validity, measured_adj=[]     -> null
-  Validity, measured_adj=[m]    -> 0.770 ± 0.092, strength 18.0
+  BoundaryConformance, measured_adj=[]  -> null
+  BoundaryConformance, measured_adj=[m] -> 0.770 ± 0.092, strength 18.0
 
 V2 (member-bucket: 14 self-reports)
   -> null (self-reports match no evidence rule)
@@ -14,20 +14,20 @@ V4 (genesis bootstrap)
   with anchors=[]            -> null
 
 V5 (fractal aggregation)
-  web4:BoundaryResponse          -> 0.800 ± 0.163, strength 3.0
-  web4:CorrectionAcceptance      -> 0.680 ± 0.190, strength 3.0
-  web4:EscalationProportionality -> null
-  parent web4:Validity           -> 0.740 ± 0.125, strength 6.0
+  w4td:BoundaryResponse          -> 0.800 ± 0.163, strength 3.0
+  w4td:CorrectionAcceptance      -> 0.680 ± 0.190, strength 3.0
+  w4td:EscalationProportionality -> null
+  parent w4td:BoundaryConformance -> 0.740 ± 0.125, strength 6.0
 
 V6a (computed provenance across strata)
-  adjudicator-A web4:Integrity   -> 0.833 ± 0.141, strength 4.0
-  member-M web4:BoundaryResponse -> 0.838 ± 0.138, strength 4.2
+  adjudicator-A w4td:Integrity   -> 0.833 ± 0.141, strength 4.0
+  member-M w4td:BoundaryResponse -> 0.838 ± 0.138, strength 4.2
   control (no anchor)            -> null
 
 V6b (dependency discount, product semantics)
-  subject-S web4:BoundaryResponse -> 0.640 ± 0.240, strength 1.0
-  member-M web4:BoundaryResponse  -> 0.569 ± 0.272, strength 0.3
+  subject-S w4td:BoundaryResponse -> 0.640 ± 0.240, strength 1.0
+  member-M w4td:BoundaryResponse  -> 0.569 ± 0.272, strength 0.3
 
 V4b (anchor drift visibility)
-  member-M web4:BoundaryResponse (anchored by operator) -> 0.800 ± 0.163, strength 3.0
-  operator derived web4:Integrity                       -> 0.333 ± 0.236, strength 1.0
+  member-M w4td:BoundaryResponse (anchored by operator) -> 0.800 ± 0.163, strength 3.0
+  operator derived w4td:Integrity                       -> 0.333 ± 0.236, strength 1.0

@@ -24,3 +24,11 @@ thread for the green-light terms.
 `web4-trust-derivation-ref` — NOT `web4-trust-core`, which stays reserved for the
 incumbent crate in `dp-web4/web4` until the merge gate passes (see root README,
 "Relationship" section). Nothing here publishes to crates.io.
+
+**Byte-target fence (2026-07-24, thread trust-derivation-rdf):** do NOT pin
+milestone-4 expected hashes against the draft1 vectors. The R1 namespace
+remediation (legion's reconciliation finding; PR #2) re-pins every
+`law_hash`/`graph_hash`/`receipt_hash` in the suite — the byte targets are
+the draft2 vectors on the PR #2 branch, final once dp merges. Milestones 1–3
+(spec ingestion, graph loading, evaluator semantics) are unaffected; only
+hash pinning and the CI hook (milestones 4–5) wait.

@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """web4-trust-core conformance check harness (skeleton).
 
-Three levels, checked in order:
+Four levels, checked in order:
   L1 semantic     — the reference evaluator regenerates the golden score output
   L2 canonical    — graph canonicalization hashes (blank-node RDFC-1.0 and
                     skolemized sorted-N-Quads) match their pinned values
   L3 byte-level   — law_hash / graph_hash / receipt_hash of the pinned receipts
                     recompute from the committed spec/graph/receipt bytes
+  L4 standard     — no collisions with web4-standard: nothing minted in its
+                    ontology namespace, no root derivation, no composite over
+                    the T3/V3 triples (SPEC.md §11, l4_standard_profile.py)
 
 Exit 0 iff every check passes. A future trust-core implementation swaps its
 own evaluator into L1 and its own receipt emitter into L3; the vectors are the
@@ -56,7 +59,7 @@ bn = SUITE / "vectors" / "canonicalization" / "blank-node-rdfc10"
 check(
     "blank-node RDFC-1.0 canonical hash",
     sha256_file(bn / "expected-canonical.nq")
-    == "ba8b2deb20e0ec6be26f27e250b43f63945dcec3c0895158df2bce37128a84d4",
+    == "a4f8b66fe8c89ccef71d34f2592c95076156000ec4181a4a882d1e69a4eb147a",
 )
 # Full RDFC-1.0 recomputation from input.nq (ported from the origin exploration).
 verify = HARNESS / "rdfc10_verify.py"
@@ -116,6 +119,17 @@ if jcs is not None:
             check(f"{name}: graph_hash binds canonical graph bytes",
                   sha256_file(d / "expected-canonical.nq") == expected["graph_hash"]
                   == receipt["graph_hash"])
+
+# ------------------------------------------------------- L4 standard-profile
+print("L4 standard-profile — DerivationSpec vs web4-standard")
+l4 = subprocess.run(
+    [sys.executable, str(HARNESS / "l4_standard_profile.py")]
+    + [str(SUITE / "vectors" / "receipts" / n / "spec.json")
+       for n in ("v3", "v4b", "v6b", "v7-fold-order")],
+    capture_output=True, text=True,
+)
+check("L4 audit: no collisions with web4-standard", l4.returncode == 0,
+      l4.stdout.strip().splitlines()[-1][:300] if l4.stdout.strip() else l4.stderr[:300])
 
 print()
 if FAILURES:

@@ -36,7 +36,11 @@ cd harness && python3 check.py    # CONFORMANCE: PASS, exit 0
 
 1. **Vector authority.** A released vector never changes; corrections add a
    new vector (the v6→v6b precedent). CI fails any PR that modifies an
-   existing file under `vectors/`.
+   existing file under `vectors/`. *(One sanctioned exception on record: the
+   2026-07-24 R1 namespace remediation re-pinned every vector in place —
+   executed while consumers = 0 and the Rust port pre-milestone-4, with
+   spec_ids bumped draft1→draft2 so the superseded laws stay citable from git
+   history. Witnessed on thread trust-derivation-rdf.)*
 2. **Bytes, not checkouts.** Every JSON hash is JCS (RFC 8785); spec
    instances are stored in canonical bytes so `sha256(file) == law_hash`.
 3. **Nothing unexercised is law.** A semantics claim without a vector is
@@ -51,6 +55,17 @@ cd harness && python3 check.py    # CONFORMANCE: PASS, exit 0
    whose conformance suite needs no RDF stack is the artifact; verified on a
    second machine (legion, 2026-07-24) with `pyld` absent and all 29 checks
    green. New harness dependencies are a review flag.
+6. **Standard-profile rules R1–R3** (SPEC.md §11): no minting or redefining
+   in the standard's namespace, no aggregating the T3/V3 root triples, every
+   root claim declared standard or society-local. Enforced by
+   `harness/l4_standard_profile.py` (L4, part of `check.py`), whose pinned
+   ontology constants re-derive from a web4 checkout via `--verify-pins`.
+7. **Dependency fence** (legion, 2026-07-24). Any name-bearing artifact —
+   package name, repo name, IRI namespace, published constant — carries an
+   explicit "not load-bearing until X" fence at creation; an identifier
+   becomes irreversible exactly when something starts depending on it. The
+   fence, not a wait state, preserves the option. (Current fences:
+   `rust/README.md` Cargo name; publish gated on dp's rename decision.)
 
 ## Key vectors
 

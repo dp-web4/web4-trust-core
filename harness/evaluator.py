@@ -18,7 +18,7 @@ from typing import Dict, List, Optional, Tuple
 @dataclass(frozen=True)
 class Obs:
     subject: str          # entity being scored
-    dimension: str        # leaf dimension (e.g. web4:BoundaryResponse)
+    dimension: str        # leaf dimension (e.g. w4td:BoundaryResponse)
     mrh: str              # MRH context
     c: float              # confidence from evidence_rules
     adjudicator: str      # source grain
@@ -49,9 +49,9 @@ DEFAULT_PARAMS = {
 
 
 DIMENSIONS = {
-    "web4:Validity": ["web4:BoundaryResponse", "web4:CorrectionAcceptance", "web4:EscalationProportionality"],
-    "web4:Reliability": ["web4:TaskCompletion", "web4:Compliance"],
-    "web4:Integrity": ["web4:AdjudicationQuality"],
+    "w4td:BoundaryConformance": ["w4td:BoundaryResponse", "w4td:CorrectionAcceptance", "w4td:EscalationProportionality"],
+    "w4td:Reliability": ["w4td:TaskCompletion", "w4td:Compliance"],
+    "w4td:Integrity": ["w4td:AdjudicationQuality"],
 }
 
 
@@ -133,7 +133,7 @@ def evaluate_dimension(
             wp = 1.0
         else:
             adj_score = evaluate_dimension(
-                params, obs.adjudicator, "web4:Integrity", obs.mrh,
+                params, obs.adjudicator, "w4td:Integrity", obs.mrh,
                 eligible, anchors, measured_adjudicators, cache, obs.height,
             )
             if adj_score is None:
@@ -180,14 +180,14 @@ def main():
     subject = "kimi-code"
     v1_obs = []
     for _ in range(6):
-        v1_obs.append(Obs(subject, "web4:BoundaryResponse", "interactive-dev", 1.0, "measured-adj", height=100))
+        v1_obs.append(Obs(subject, "w4td:BoundaryResponse", "interactive-dev", 1.0, "measured-adj", height=100))
     for _ in range(12):
-        v1_obs.append(Obs(subject, "web4:BoundaryResponse", "interactive-dev", 0.7, "measured-adj", height=100))
+        v1_obs.append(Obs(subject, "w4td:BoundaryResponse", "interactive-dev", 0.7, "measured-adj", height=100))
 
     h1 = report_height(v1_obs)
     print("V1 (kimi-code / interactive-dev day one)")
-    print(f"  Validity, measured_adj=[]     -> {fmt(evaluate_dimension(params, subject, 'web4:Validity', 'interactive-dev', v1_obs, [], [], {}, h1))}")
-    print(f"  Validity, measured_adj=[m]    -> {fmt(evaluate_dimension(params, subject, 'web4:Validity', 'interactive-dev', v1_obs, [], ['measured-adj'], {}, h1))}")
+    print(f"  BoundaryConformance, measured_adj=[]  -> {fmt(evaluate_dimension(params, subject, 'w4td:BoundaryConformance', 'interactive-dev', v1_obs, [], [], {}, h1))}")
+    print(f"  BoundaryConformance, measured_adj=[m] -> {fmt(evaluate_dimension(params, subject, 'w4td:BoundaryConformance', 'interactive-dev', v1_obs, [], ['measured-adj'], {}, h1))}")
     print()
 
     # ------------------------------------------------------------------ V2
@@ -198,86 +198,86 @@ def main():
     # ------------------------------------------------------------------ V3
     v3_obs = []
     for _ in range(5):
-        v3_obs.append(Obs(subject, "web4:BoundaryResponse", "interactive-dev", 1.0, "adjudicator-X", height=100))
+        v3_obs.append(Obs(subject, "w4td:BoundaryResponse", "interactive-dev", 1.0, "adjudicator-X", height=100))
 
     h3 = report_height(v3_obs)
     print("V3 (adjudicator capture)")
-    print(f"  harsh default (unmeasured weight 0.0) -> {fmt(evaluate_dimension(params, subject, 'web4:Validity', 'interactive-dev', v3_obs, [], [], {}, h3))}")
+    print(f"  harsh default (unmeasured weight 0.0) -> {fmt(evaluate_dimension(params, subject, 'w4td:BoundaryConformance', 'interactive-dev', v3_obs, [], [], {}, h3))}")
     eps_params = params.copy()
     eps_params["provenance_unmeasured_weight"] = 0.1
-    print(f"  epsilon variant (weight 0.1)          -> {fmt(evaluate_dimension(eps_params, subject, 'web4:Validity', 'interactive-dev', v3_obs, [], [], {}, h3))}")
+    print(f"  epsilon variant (weight 0.1)          -> {fmt(evaluate_dimension(eps_params, subject, 'w4td:BoundaryConformance', 'interactive-dev', v3_obs, [], [], {}, h3))}")
     print()
 
     # ------------------------------------------------------------------ V4
     v4_obs = []
     for _ in range(3):
-        v4_obs.append(Obs("member-M", "web4:BoundaryResponse", "interactive-dev", 1.0, "operator", height=100))
+        v4_obs.append(Obs("member-M", "w4td:BoundaryResponse", "interactive-dev", 1.0, "operator", height=100))
 
     h4 = report_height(v4_obs)
     print("V4 (genesis bootstrap)")
-    print(f"  with anchors=[operator]    -> {fmt(evaluate_dimension(params, 'member-M', 'web4:Validity', 'interactive-dev', v4_obs, ['operator'], [], {}, h4))}")
-    print(f"  with anchors=[]            -> {fmt(evaluate_dimension(params, 'member-M', 'web4:Validity', 'interactive-dev', v4_obs, [], [], {}, h4))}")
+    print(f"  with anchors=[operator]    -> {fmt(evaluate_dimension(params, 'member-M', 'w4td:BoundaryConformance', 'interactive-dev', v4_obs, ['operator'], [], {}, h4))}")
+    print(f"  with anchors=[]            -> {fmt(evaluate_dimension(params, 'member-M', 'w4td:BoundaryConformance', 'interactive-dev', v4_obs, [], [], {}, h4))}")
     print()
 
     # ------------------------------------------------------------------ V5
     v5_obs = []
     for _ in range(3):
-        v5_obs.append(Obs("member-M", "web4:BoundaryResponse", "interactive-dev", 1.0, "measured-adj", height=100))
-    v5_obs.append(Obs("member-M", "web4:CorrectionAcceptance", "interactive-dev", 1.0, "measured-adj", height=100))
+        v5_obs.append(Obs("member-M", "w4td:BoundaryResponse", "interactive-dev", 1.0, "measured-adj", height=100))
+    v5_obs.append(Obs("member-M", "w4td:CorrectionAcceptance", "interactive-dev", 1.0, "measured-adj", height=100))
     for _ in range(2):
-        v5_obs.append(Obs("member-M", "web4:CorrectionAcceptance", "interactive-dev", 0.7, "measured-adj", height=100))
+        v5_obs.append(Obs("member-M", "w4td:CorrectionAcceptance", "interactive-dev", 0.7, "measured-adj", height=100))
 
     h5 = report_height(v5_obs)
     cache: Dict[Tuple[str, str, int], Optional[Score]] = {}
     print("V5 (fractal aggregation)")
-    print(f"  web4:BoundaryResponse          -> {fmt(evaluate_dimension(params, 'member-M', 'web4:BoundaryResponse', 'interactive-dev', v5_obs, [], ['measured-adj'], cache, h5))}")
-    print(f"  web4:CorrectionAcceptance      -> {fmt(evaluate_dimension(params, 'member-M', 'web4:CorrectionAcceptance', 'interactive-dev', v5_obs, [], ['measured-adj'], cache, h5))}")
-    print(f"  web4:EscalationProportionality -> {fmt(evaluate_dimension(params, 'member-M', 'web4:EscalationProportionality', 'interactive-dev', v5_obs, [], ['measured-adj'], cache, h5))}")
-    print(f"  parent web4:Validity           -> {fmt(evaluate_dimension(params, 'member-M', 'web4:Validity', 'interactive-dev', v5_obs, [], ['measured-adj'], cache, h5))}")
+    print(f"  w4td:BoundaryResponse          -> {fmt(evaluate_dimension(params, 'member-M', 'w4td:BoundaryResponse', 'interactive-dev', v5_obs, [], ['measured-adj'], cache, h5))}")
+    print(f"  w4td:CorrectionAcceptance      -> {fmt(evaluate_dimension(params, 'member-M', 'w4td:CorrectionAcceptance', 'interactive-dev', v5_obs, [], ['measured-adj'], cache, h5))}")
+    print(f"  w4td:EscalationProportionality -> {fmt(evaluate_dimension(params, 'member-M', 'w4td:EscalationProportionality', 'interactive-dev', v5_obs, [], ['measured-adj'], cache, h5))}")
+    print(f"  parent w4td:BoundaryConformance -> {fmt(evaluate_dimension(params, 'member-M', 'w4td:BoundaryConformance', 'interactive-dev', v5_obs, [], ['measured-adj'], cache, h5))}")
     print()
 
     # ------------------------------------------------------------------ V6a
     # Anchor O -> adjudicator A -> member M, across strata.
     v6a_obs = []
     for _ in range(4):
-        v6a_obs.append(Obs("adjudicator-A", "web4:AdjudicationQuality", "interactive-dev", 1.0, "operator", height=10))
+        v6a_obs.append(Obs("adjudicator-A", "w4td:AdjudicationQuality", "interactive-dev", 1.0, "operator", height=10))
     for _ in range(5):
-        v6a_obs.append(Obs("member-M", "web4:BoundaryResponse", "interactive-dev", 1.0, "adjudicator-A", height=20))
+        v6a_obs.append(Obs("member-M", "w4td:BoundaryResponse", "interactive-dev", 1.0, "adjudicator-A", height=20))
 
     h6a = report_height(v6a_obs)
     print("V6a (computed provenance across strata)")
-    print(f"  adjudicator-A web4:Integrity   -> {fmt(evaluate_dimension(params, 'adjudicator-A', 'web4:Integrity', 'interactive-dev', v6a_obs, ['operator'], [], {}, h6a))}")
-    print(f"  member-M web4:BoundaryResponse -> {fmt(evaluate_dimension(params, 'member-M', 'web4:BoundaryResponse', 'interactive-dev', v6a_obs, ['operator'], [], {}, h6a))}")
+    print(f"  adjudicator-A w4td:Integrity   -> {fmt(evaluate_dimension(params, 'adjudicator-A', 'w4td:Integrity', 'interactive-dev', v6a_obs, ['operator'], [], {}, h6a))}")
+    print(f"  member-M w4td:BoundaryResponse -> {fmt(evaluate_dimension(params, 'member-M', 'w4td:BoundaryResponse', 'interactive-dev', v6a_obs, ['operator'], [], {}, h6a))}")
     # Control: no anchor -> A unmeasured -> M null.
-    print(f"  control (no anchor)            -> {fmt(evaluate_dimension(params, 'member-M', 'web4:BoundaryResponse', 'interactive-dev', v6a_obs, [], [], {}, h6a))}")
+    print(f"  control (no anchor)            -> {fmt(evaluate_dimension(params, 'member-M', 'w4td:BoundaryResponse', 'interactive-dev', v6a_obs, [], [], {}, h6a))}")
     print()
 
     # ------------------------------------------------------------------ V6b
     # Dependency discount vector: product semantics, discount 0.5.
     # Subject S scores 0.640 on BoundaryResponse; M depends on S.
     v6b_obs = [
-        Obs("subject-S", "web4:BoundaryResponse", "interactive-dev", 0.92, "measured-adj", height=10),
-        Obs("member-M", "web4:BoundaryResponse", "interactive-dev", 1.0, "measured-adj", height=20, depends_on=(("subject-S", "web4:BoundaryResponse"),)),
+        Obs("subject-S", "w4td:BoundaryResponse", "interactive-dev", 0.92, "measured-adj", height=10),
+        Obs("member-M", "w4td:BoundaryResponse", "interactive-dev", 1.0, "measured-adj", height=20, depends_on=(("subject-S", "w4td:BoundaryResponse"),)),
     ]
 
     h6b = report_height(v6b_obs)
     print("V6b (dependency discount, product semantics)")
-    print(f"  subject-S web4:BoundaryResponse -> {fmt(evaluate_dimension(params, 'subject-S', 'web4:BoundaryResponse', 'interactive-dev', v6b_obs, [], ['measured-adj'], {}, h6b))}")
-    print(f"  member-M web4:BoundaryResponse  -> {fmt(evaluate_dimension(params, 'member-M', 'web4:BoundaryResponse', 'interactive-dev', v6b_obs, [], ['measured-adj'], {}, h6b))}")
+    print(f"  subject-S w4td:BoundaryResponse -> {fmt(evaluate_dimension(params, 'subject-S', 'w4td:BoundaryResponse', 'interactive-dev', v6b_obs, [], ['measured-adj'], {}, h6b))}")
+    print(f"  member-M w4td:BoundaryResponse  -> {fmt(evaluate_dimension(params, 'member-M', 'w4td:BoundaryResponse', 'interactive-dev', v6b_obs, [], ['measured-adj'], {}, h6b))}")
     print()
 
     # ------------------------------------------------------------------ V4b
     # Anchor drift visibility: O anchors M, but O's derived Integrity is low.
     v4b_obs = []
     for _ in range(3):
-        v4b_obs.append(Obs("member-M", "web4:BoundaryResponse", "interactive-dev", 1.0, "operator", height=10))
+        v4b_obs.append(Obs("member-M", "w4td:BoundaryResponse", "interactive-dev", 1.0, "operator", height=10))
     # Another measured adjudicator overturns one of O's adjudication acts.
-    v4b_obs.append(Obs("operator", "web4:AdjudicationQuality", "interactive-dev", 0.0, "measured-adj", height=20))
+    v4b_obs.append(Obs("operator", "w4td:AdjudicationQuality", "interactive-dev", 0.0, "measured-adj", height=20))
 
     h4b = report_height(v4b_obs)
     print("V4b (anchor drift visibility)")
-    print(f"  member-M web4:BoundaryResponse (anchored by operator) -> {fmt(evaluate_dimension(params, 'member-M', 'web4:BoundaryResponse', 'interactive-dev', v4b_obs, ['operator'], ['measured-adj'], {}, h4b))}")
-    print(f"  operator derived web4:Integrity                       -> {fmt(evaluate_dimension(params, 'operator', 'web4:Integrity', 'interactive-dev', v4b_obs, ['operator'], ['measured-adj'], {}, h4b))}")
+    print(f"  member-M w4td:BoundaryResponse (anchored by operator) -> {fmt(evaluate_dimension(params, 'member-M', 'w4td:BoundaryResponse', 'interactive-dev', v4b_obs, ['operator'], ['measured-adj'], {}, h4b))}")
+    print(f"  operator derived w4td:Integrity                       -> {fmt(evaluate_dimension(params, 'operator', 'w4td:Integrity', 'interactive-dev', v4b_obs, ['operator'], ['measured-adj'], {}, h4b))}")
 
 
 if __name__ == "__main__":
