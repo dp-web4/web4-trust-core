@@ -34,7 +34,18 @@ Checks
 Library-free by design (repo law rule 5; L4 needs not even `jcs`).
 
     python3 l4_standard_profile.py <spec.json> [spec.json ...]
-    python3 l4_standard_profile.py --verify-pins <path/to/t3v3-ontology.ttl>
+    python3 l4_standard_profile.py --verify-pins <t3v3-ontology.ttl>
+    python3 l4_standard_profile.py --verify-pins <web4-standard/ontology/>
+
+The L4d/L4f oracle ("did the standard define this term?") is DERIVED from a
+web4 checkout when one is reachable ($WEB4_STANDARD_ONTOLOGY, else
+../web4/web4-standard/ontology, else ../../) — union of every *.ttl and every
+web4-bound *.jsonld, all five files, not just t3v3-ontology.ttl. The
+transcribed ONTOLOGY_TERMS below is the FALLBACK for checkout-less runs, and
+L4d's output names which oracle it used. (legion, round 4: the pinned set
+covered 24 of the standard's 96 terms, so L4d called §11-R1-permitted reuse
+of the other 72 "minting" — a false positive the sweep-widening of round 3
+made reachable.)
 
 Exit 0 iff every spec passes every blocking check.
 
@@ -51,6 +62,7 @@ unwitnessed copy and should be treated as such.
 --------------------------------------------------------------------------
 """
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -207,13 +219,15 @@ def audit(path):
     if graph.exists():
         graph_terms = set(IRI_IN_NQ.findall(graph.read_text()))
         used |= graph_terms
+    known, oracle_note = standard_terms()
     minted = sorted(local_name(i) for i in used
-                    if local_name(i) and local_name(i) not in ONTOLOGY_TERMS)
+                    if local_name(i) and local_name(i) not in known)
     check(name, "L4d",
           "no term used in spec or graph is minted in the standard's namespace",
           not minted,
           f"{len(minted)} minted: {', '.join(minted)} — the ontology invites "
-          f"extending the dimension tree, not the namespace")
+          f"extending the dimension tree, not the namespace "
+          f"[oracle: {oracle_note}]")
 
     # ---- L4e: parameter diff (informational) --------------------------------
     params = set(spec.get("parameters", {}))
@@ -231,15 +245,68 @@ def audit(path):
 
     # ---- L4f: reused standard terms (informational) -------------------------
     reused = sorted(local_name(i) for i in used
-                    if local_name(i) and local_name(i) in ONTOLOGY_TERMS)
+                    if local_name(i) and local_name(i) in known)
     if reused:
         print(f"  [info] L4f standard terms reused: {', '.join(reused)} — "
               f"rdfs:domain/range compatibility is not decidable from the "
               f"spec; verify against t3v3-ontology.ttl manually")
 
 
+def derive_ontology_terms(ontology_dir):
+    """Union of every term the standard defines in STANDARD_NS, all files.
+
+    L4d's oracle, derived rather than transcribed. `t3v3-ontology.ttl` is one
+    of five files in `web4-standard/ontology/`; deciding "did the standard
+    define this?" from that one file calls the other 72 terms squatting
+    (legion, L6, round 4). Returns None when no directory is available, in
+    which case the transcribed ONTOLOGY_TERMS fallback applies and L4d says
+    so.
+    """
+    d = Path(ontology_dir)
+    if not d.is_dir():
+        return None
+    terms = set()
+    for f in sorted(d.glob("*.ttl")):
+        terms |= set(re.findall(r"^web4:([A-Za-z0-9_]+)\s+a\s+",
+                                f.read_text(), re.M))
+    for f in sorted(d.glob("*.jsonld")):
+        text = f.read_text()
+        if STANDARD_NS in text:                       # else web4: means else
+            terms |= set(re.findall(r'"web4:([A-Za-z0-9_]+)"', text))
+    return terms or None
+
+
+def standard_terms():
+    """The oracle L4d/L4f use. Derived if a checkout is reachable, else pinned."""
+    for cand in (os.environ.get("WEB4_STANDARD_ONTOLOGY"),
+                 "../web4/web4-standard/ontology",
+                 "../../web4/web4-standard/ontology"):
+        if not cand:
+            continue
+        derived = derive_ontology_terms(cand)
+        if derived:
+            return derived, f"derived from {cand} ({len(derived)} terms)"
+    return ONTOLOGY_TERMS, (f"PINNED fallback ({len(ONTOLOGY_TERMS)} terms, "
+                            f"t3v3-ontology.ttl only) — no web4 checkout "
+                            f"found; L4d may over-report reuse as minting")
+
+
 def verify_pins(ttl_path):
     """Re-derive the pinned root sets from the ontology. Constants are code."""
+    p = Path(ttl_path)
+    if p.is_dir():
+        derived = derive_ontology_terms(p)
+        if derived is None:
+            print(f"pins vs {ttl_path} (directory) — no ontology files found")
+            return 1
+        print(f"pins vs {ttl_path} (directory, all files)")
+        print(f"  standard defines in {STANDARD_NS}: {len(derived)} terms")
+        gap = sorted(derived - ONTOLOGY_TERMS)
+        if gap:
+            print(f"  [warn] {len(gap)} standard terms outside the pin — L4d "
+                  f"over-reports these as minted unless derivation is on: "
+                  f"{gap}")
+        ttl_path = str(p / "t3v3-ontology.ttl")
     text = Path(ttl_path).read_text()
     declared = set(re.findall(r"^web4:(\w+)\s+a\s+web4:Dimension", text, re.M))
     ok = declared == (T3_ROOTS | V3_ROOTS)
@@ -265,6 +332,10 @@ if __name__ == "__main__":
         print(__doc__)
         sys.exit(0)
     if args[0] == "--verify-pins":
+        if len(args) < 2:
+            print("usage: l4_standard_profile.py --verify-pins "
+                  "<t3v3-ontology.ttl | web4-standard/ontology/>")
+            sys.exit(2)
         sys.exit(verify_pins(args[1]))
 
     print("L4 standard-profile audit — DerivationSpec vs web4-standard")
