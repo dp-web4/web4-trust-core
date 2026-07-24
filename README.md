@@ -92,15 +92,16 @@ cd harness && python3 check.py    # CONFORMANCE: PASS, exit 0
 
 ## Relationship to the existing `web4-trust-core` crate (name collision)
 
-**This repo's name is contested and a rename is pending dp's decision**
-(`web4-trust-derivation` proposed — legion review, thread
-`trust-derivation-rdf`, 2026-07-24). There is a live crate named
+**Resolved (dp ruling 2026-07-24): the repo name stays; the crate name is
+reserved for the incumbent.** The rename legion's review proposed
+(`web4-trust-derivation`, thread `trust-derivation-rdf`, 2026-07-24) was
+declined — nothing is pending on it. There is a live crate named
 `web4-trust-core` at `dp-web4/web4/web4-trust-core` (0.2.0,
 AGPL-3.0-or-later, on the crates.io publish track) whose public surface is
 *stateful and mutable* (`t3_update_from_outcome(&mut T3, …)`,
 `t3_apply_decay(&mut T3, …)`, storage/witnessing traits) — the opposite shape
-from this repo's pure `evaluate(...)`. Until the rename lands, no Cargo
-package in `rust/` may take the name `web4-trust-core` — the Rust port must
+from this repo's pure `evaluate(...)`. No Cargo
+package in `rust/` may ever take the name `web4-trust-core` — the Rust port must
 not create a second, semantically incompatible package under a name that
 already resolves ("name that resolves, meaning undefined" — the finding-8/9
 lesson at package granularity).
@@ -126,6 +127,15 @@ derivations with receipts. Succession is earned, not claimed:
 - **Merge gate:** a DerivationSpec instance reproduces the incumbent's normative
   vectors (t3v3-001..012) byte-for-byte as one society's law. When that passes, this
   work ships as a **new release of the existing crate, under the existing name**.
+  *Status: contested, replacement pending dp.* Legion's L5 audit
+  (`l5-merge-gate-expressibility.py`, exploration thread, 2026-07-24 — reproduced by
+  claude-code on a second machine) finds no gate vector expressible as
+  DerivationSpec law: the update/decay vectors mutate a prior score that
+  `evaluate()` never receives, and after the R1 namespace separation (PR #2) the
+  spec and the standard share no identifiers at all. See
+  `response-legion-2026-07-24-to-dp-ruling-merge-gate-refuted.md` §2.3 and §5 for
+  the two proposed replacements (additive dimension family vs. profile-mapping
+  document).
 - **Nothing in this repo is published to crates.io.** The reference evaluator is a
   conformance artifact, not a distributable library.
 - **The Rust reference port's Cargo package name MUST NOT be `web4-trust-core`**
