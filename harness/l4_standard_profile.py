@@ -43,9 +43,20 @@ web4 checkout when one is reachable ($WEB4_STANDARD_ONTOLOGY, else
 web4-bound *.jsonld, all five files, not just t3v3-ontology.ttl. The
 transcribed ONTOLOGY_TERMS below is the FALLBACK for checkout-less runs, and
 L4d's output names which oracle it used. (legion, round 4: the pinned set
-covered 24 of the standard's 96 terms, so L4d called §11-R1-permitted reuse
-of the other 72 "minting" — a false positive the sweep-widening of round 3
+covered 24 of the standard's 95 terms, so L4d called §11-R1-permitted reuse
+of the other 71 "minting" — a false positive the sweep-widening of round 3
 made reachable.)
+
+Deriving moves the trust from a transcription to a *parser*, so the oracle is
+now only as correct as its notion of which prefix means STANDARD_NS. `web4:`
+is NOT a constant across the standard: `hub-law.ttl` binds it to
+`https://web4.io/ontology/` (slash), every other file to `…/ontology#`.
+Matching the token `^web4:` therefore admitted one slash-namespace term
+(`subPredicateOf`) into the hash-namespace oracle — count 96/72, not 95/71 —
+and a spec reusing `web4:subPredicateOf` in the hash namespace, an IRI the
+standard never defines, passed L4d. Both extractors resolve each document's
+own `@prefix` map / `@context` before deciding. (claude-code, round 5: the
+round-4 fix for a too-narrow oracle introduced a too-wide one.)
 
 Exit 0 iff every spec passes every blocking check.
 
@@ -72,8 +83,9 @@ STANDARD_NS = "https://web4.io/ontology#"
 T3_ROOTS = {"Talent", "Training", "Temperament"}
 V3_ROOTS = {"Valuation", "Veracity", "Validity"}
 
-# Every term t3v3-ontology.ttl defines in STANDARD_NS. Minting anything else
-# into that namespace is squatting, not extending.
+# Every term t3v3-ontology.ttl defines in STANDARD_NS — 24 of the 95 the
+# standard defines across its five ontology files. OFFLINE FALLBACK ONLY:
+# `standard_terms()` prefers the derived union and labels which one it used.
 ONTOLOGY_TERMS = {
     # classes
     "Dimension", "T3Tensor", "V3Tensor", "DimensionScore",
@@ -252,12 +264,64 @@ def audit(path):
               f"spec; verify against t3v3-ontology.ttl manually")
 
 
+def ttl_terms(text):
+    """Terms a Turtle document declares in STANDARD_NS.
+
+    Resolves the document's own @prefix map first, because `web4:` is not a
+    constant across the standard — `hub-law.ttl` binds it to
+    `https://web4.io/ontology/`. Matching the token instead of the IRI it
+    resolves to admits slash-namespace terms into the hash-namespace oracle.
+    """
+    bound = {p for p, iri in re.findall(
+        r"@prefix\s+([A-Za-z0-9_-]*):\s*<([^>]*)>", text) if iri == STANDARD_NS}
+    terms = set()
+    for pfx in bound:
+        terms |= set(re.findall(
+            r"(?m)^" + re.escape(pfx) + r":([A-Za-z0-9_.-]+)\s+a\s+", text))
+    # subjects written as full IRIs, which no prefix map can hide
+    terms |= set(re.findall(
+        r"<" + re.escape(STANDARD_NS) + r"([^>]+)>\s+a\s+", text))
+    return terms
+
+
+def jsonld_terms(text):
+    """Terms a JSON-LD @context maps into STANDARD_NS.
+
+    Resolved through the context rather than by substring match on the
+    namespace: a document may mention it in a comment, or bind `web4`
+    elsewhere and reach STANDARD_NS under another prefix.
+    """
+    try:
+        ctx = json.loads(text).get("@context", {})
+    except (ValueError, AttributeError):
+        return set()
+    if not isinstance(ctx, dict):
+        return set()
+    bound = {k for k, v in ctx.items()
+             if isinstance(v, str) and v == STANDARD_NS}
+    terms = set()
+    for val in ctx.values():
+        iri = val if isinstance(val, str) else (
+            val.get("@id", "") if isinstance(val, dict) else "")
+        if not isinstance(iri, str):
+            continue
+        if iri.startswith(STANDARD_NS):
+            local = iri[len(STANDARD_NS):]
+        elif any(iri.startswith(p + ":") for p in bound):
+            local = iri.split(":", 1)[1]
+        else:
+            continue
+        if local:                      # the `"web4": "…#"` binding is not a term
+            terms.add(local)
+    return terms
+
+
 def derive_ontology_terms(ontology_dir):
     """Union of every term the standard defines in STANDARD_NS, all files.
 
     L4d's oracle, derived rather than transcribed. `t3v3-ontology.ttl` is one
     of five files in `web4-standard/ontology/`; deciding "did the standard
-    define this?" from that one file calls the other 72 terms squatting
+    define this?" from that one file calls the other 71 terms squatting
     (legion, L6, round 4). Returns None when no directory is available, in
     which case the transcribed ONTOLOGY_TERMS fallback applies and L4d says
     so.
@@ -267,12 +331,9 @@ def derive_ontology_terms(ontology_dir):
         return None
     terms = set()
     for f in sorted(d.glob("*.ttl")):
-        terms |= set(re.findall(r"^web4:([A-Za-z0-9_]+)\s+a\s+",
-                                f.read_text(), re.M))
+        terms |= ttl_terms(f.read_text())
     for f in sorted(d.glob("*.jsonld")):
-        text = f.read_text()
-        if STANDARD_NS in text:                       # else web4: means else
-            terms |= set(re.findall(r'"web4:([A-Za-z0-9_]+)"', text))
+        terms |= jsonld_terms(f.read_text())
     return terms or None
 
 
