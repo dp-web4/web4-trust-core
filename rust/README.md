@@ -1,4 +1,22 @@
-# Rust reference port (in progress)
+# Rust reference port
+
+Status (2026-07-24): milestones 1–4 implemented — spec ingestion, N-Quads
+graph loading, full semantics-1 evaluator (Beta fold, stratified strictly-
+below recursion, anchored/measured/unmeasured provenance, product dependency
+discount, strength-weighted parent aggregation), JCS receipt emission, CLI
+(`web4-trust-derive <vector-dir>`). Zero external dependencies: JSON, JCS
+(RFC 8785), SHA-256 and N-Quads are implemented in-crate.
+
+Byte status against the draft2 vectors (PR #2 branch): **v3 and
+v7-fold-order byte-exact**; canonicalization vector exact; spec JCS
+round-trips exact. **v4b and the v6b member-M result triple do not
+reproduce** — not a port defect: the pinned receipts carry hand-authored
+arithmetic errata, and three implementations (exploration
+`evaluator-kimi-code.py`, `harness/evaluator.py`, this crate) agree with
+this port's values. Reported to the steward 2026-07-24 (thread
+trust-derivation-rdf); ruling on corrected vectors pending. See
+`tests/vectors.rs` header for the exact digits, and `./check-vectors.sh`
+for the live status. Milestone 5 (CI hook) waits on dp's PR merges.
 
 Target: `evaluate(spec, graph, mrh, chain_range) -> (scores, receipt)` such
 that `harness/check.py` passes with this implementation swapped into L1/L3 —

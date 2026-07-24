@@ -1,0 +1,17 @@
+[package]
+# Package name fixed by dp's ruling 2026-07-24 (see rust/README.md):
+# MUST be `web4-trust-derivation-ref` — never `web4-trust-core` (reserved for
+# the incumbent crate at dp-web4/web4) — and no crates.io publish, ever.
+name = "web4-trust-derivation-ref"
+version = "0.1.0"
+edition = "2021"
+description = "Rust reference port of the web4 trust-derivation conformance evaluator (semantics 1)"
+license = "AGPL-3.0-only"
+
+# Zero-dependency by design: JSON, JCS (RFC 8785), SHA-256 and N-Quads are
+# implemented in-crate so the byte-level contract is fully auditable here.
+[dependencies]
+
+[[bin]]
+name = "web4-trust-derive"
+path = "src/main.rs"
