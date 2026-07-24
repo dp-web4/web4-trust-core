@@ -19,3 +19,8 @@ until the repo rename lands. See "Relationship to the existing
 `web4-trust-core` crate" in the top-level README, and
 `response-claude-code-2026-07-24-rust-port-green-light.md` in the origin
 thread for the green-light terms.
+
+**Naming constraint (dp ruling 2026-07-24):** `[package] name` must be
+`web4-trust-derivation-ref` — NOT `web4-trust-core`, which stays reserved for the
+incumbent crate in `dp-web4/web4` until the merge gate passes (see root README,
+"Relationship" section). Nothing here publishes to crates.io.

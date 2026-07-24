@@ -100,6 +100,24 @@ standard's normative table and a DerivationSpec disagree) plus a migration
 plan for the live consumers; until that round closes, "one semantics for
 three products" is an aspiration this repo works toward, not a claim it makes.
 
+## Relationship to the `web4-trust-core` crate (dp ruling, 2026-07-24)
+
+The Rust crate `web4-trust-core` (in `dp-web4/web4`, linked by hardbound, constants
+normatively pinned by web4-standard's t3v3 vectors) is the **incumbent** trust
+arithmetic. This repo is the **successor research track** for its derivation half:
+constants-in-code become signed law; mutate-in-place scores become read-time
+derivations with receipts. Succession is earned, not claimed:
+
+- **Merge gate:** a DerivationSpec instance reproduces the incumbent's normative
+  vectors (t3v3-001..012) byte-for-byte as one society's law. When that passes, this
+  work ships as a **new release of the existing crate, under the existing name**.
+- **Nothing in this repo is published to crates.io.** The reference evaluator is a
+  conformance artifact, not a distributable library.
+- **The Rust reference port's Cargo package name MUST NOT be `web4-trust-core`**
+  (use `web4-trust-derivation-ref`). The crate name stays with the incumbent until
+  the merge gate passes — so incumbent + evaluator can coexist in one dependency
+  graph during migration with no collision.
+
 ## Provenance
 
 Produced 2026-07-24 by a multi-agent refute-or-accept exploration
