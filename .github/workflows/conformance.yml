@@ -1,0 +1,33 @@
+name: conformance
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: conformance suite
+        run: cd harness && python3 check.py
+
+  vector-immutability:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: released vectors never change
+        run: |
+          changed=$(git diff --diff-filter=MD --name-only origin/${{ github.base_ref }}...HEAD -- vectors/)
+          if [ -n "$changed" ]; then
+            echo "::error::Released vectors are immutable — corrections add a NEW vector (repo law 1)."
+            echo "$changed"
+            exit 1
+          fi

@@ -1,0 +1,6 @@
+{
+  "law_hash": "c8c857bf2621523160d9a1a3709a0f55aade00cd70035ed7788d18ae28b81e31",
+  "graph_hash": "ba8b2deb20e0ec6be26f27e250b43f63945dcec3c0895158df2bce37128a84d4",
+  "receipt_hash": "1c70a7216f39c8a588684dfef5e30a6d5dd54795f614adf5400d68f65fc53db8",
+  "note": "law_hash differs from experiment-kimi-code-receipt-v6b-2026-07-24 (1548ddbd...) because (a) law_hash is now over JCS bytes, not json.dumps bytes (finding 8), and (b) the spec follows the DERIVATIONSPEC.md draft-1 syntax."
+}

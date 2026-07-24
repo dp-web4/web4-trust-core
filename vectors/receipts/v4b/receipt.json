@@ -1,0 +1,120 @@
+{
+  "chain_range": {
+    "below": 21,
+    "from": 0
+  },
+  "evaluator": {
+    "name": "web4-trust-core",
+    "version": "kimi-code-conformance-2026-07-24"
+  },
+  "graph_hash": "9b91ff74d197b9d6d629ead48d9945da1a815b7fb0d917337a564a76e7b438ff",
+  "law_hash": "1840e8e39f6ffcab02d0e81b8f43e48084b5c5cd76697e4fca64883da62f5fd5",
+  "mrh": "urn:web4:mrh:interactive-dev",
+  "parameters": {
+    "dependency_discount_per_hop": 0.5,
+    "prior_alpha": 1.0,
+    "prior_beta": 1.0,
+    "provenance_unmeasured_weight": 0.0,
+    "provenance_weight_statistic": "mean",
+    "unmeasured_if_total_weight_below": 0.01
+  },
+  "receipt_hash": "abba650e724bfbed68fa1207ba677e0efde567bba5c96b17e9a625cc26572408",
+  "scores": [
+    {
+      "dimension": "web4:BoundaryResponse",
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "height": 10,
+          "obs": "urn:web4:obs:blk10:0",
+          "w_d": {
+            "deps": [],
+            "value": 1.0
+          },
+          "w_p": {
+            "anchor": {
+              "derived_integrity": null,
+              "id": "urn:web4:entity:operator",
+              "law_weight": 1.0
+            },
+            "basis": "anchored",
+            "value": 1.0
+          }
+        },
+        {
+          "confidence": 1.0,
+          "height": 10,
+          "obs": "urn:web4:obs:blk10:1",
+          "w_d": {
+            "deps": [],
+            "value": 1.0
+          },
+          "w_p": {
+            "anchor": {
+              "derived_integrity": null,
+              "id": "urn:web4:entity:operator",
+              "law_weight": 1.0
+            },
+            "basis": "anchored",
+            "value": 1.0
+          }
+        },
+        {
+          "confidence": 1.0,
+          "height": 10,
+          "obs": "urn:web4:obs:blk10:2",
+          "w_d": {
+            "deps": [],
+            "value": 1.0
+          },
+          "w_p": {
+            "anchor": {
+              "derived_integrity": null,
+              "id": "urn:web4:entity:operator",
+              "law_weight": 1.0
+            },
+            "basis": "anchored",
+            "value": 1.0
+          }
+        }
+      ],
+      "result": {
+        "mu": 0.8,
+        "sigma": 0.1632993161855452,
+        "strength": 3.0
+      },
+      "subject": "urn:web4:grain:member-M",
+      "unmeasured_upstream": []
+    },
+    {
+      "dimension": "web4:Integrity",
+      "evidence": [
+        {
+          "confidence": 0.0,
+          "height": 20,
+          "obs": "urn:web4:obs:blk20:0",
+          "w_d": {
+            "deps": [],
+            "value": 1.0
+          },
+          "w_p": {
+            "anchor": {
+              "derived_integrity": null,
+              "id": "urn:web4:entity:measured-adj",
+              "law_weight": 1.0
+            },
+            "basis": "anchored",
+            "value": 1.0
+          }
+        }
+      ],
+      "result": {
+        "mu": 0.3333333333333333,
+        "sigma": 0.23570226039551584,
+        "strength": 1.0
+      },
+      "subject": "urn:web4:grain:operator",
+      "unmeasured_upstream": []
+    }
+  ]
+}

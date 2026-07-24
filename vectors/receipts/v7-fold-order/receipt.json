@@ -1,0 +1,90 @@
+{
+  "chain_range": {
+    "below": 11,
+    "from": 0
+  },
+  "evaluator": {
+    "name": "web4-trust-core",
+    "version": "claude-code-conformance-2026-07-24"
+  },
+  "graph_hash": "aca7615f127933d11b2112e0eb8117af31f9e426b2d0e6e30c4b0e390665ab4c",
+  "law_hash": "e7d63e5543c2fa09f8592d1feb5e7275b0df5a7a41645fed332e8f532ca18098",
+  "mrh": "urn:web4:mrh:interactive-dev",
+  "parameters": {
+    "dependency_discount_per_hop": 0.5,
+    "prior_alpha": 1.0,
+    "prior_beta": 1.0,
+    "provenance_unmeasured_weight": 0.0,
+    "provenance_weight_statistic": "mean",
+    "unmeasured_if_total_weight_below": 0.01
+  },
+  "receipt_hash": "4d16e89aed1f9f75651b64af8f7601665debfe744af94ab471b2b39cc5db2bb8",
+  "scores": [
+    {
+      "dimension": "web4:BoundaryResponse",
+      "evidence": [
+        {
+          "confidence": 0.8,
+          "height": 10,
+          "obs": "urn:web4:obs:blk10:0",
+          "w_d": {
+            "deps": [],
+            "value": 1.0
+          },
+          "w_p": {
+            "anchor": {
+              "derived_integrity": null,
+              "id": "urn:web4:entity:measured-adj",
+              "law_weight": 1.0
+            },
+            "basis": "anchored",
+            "value": 1.0
+          }
+        },
+        {
+          "confidence": 0.95,
+          "height": 10,
+          "obs": "urn:web4:obs:blk10:1",
+          "w_d": {
+            "deps": [],
+            "value": 1.0
+          },
+          "w_p": {
+            "anchor": {
+              "derived_integrity": null,
+              "id": "urn:web4:entity:measured-adj",
+              "law_weight": 1.0
+            },
+            "basis": "anchored",
+            "value": 1.0
+          }
+        },
+        {
+          "confidence": 0.32,
+          "height": 10,
+          "obs": "urn:web4:obs:blk10:2",
+          "w_d": {
+            "deps": [],
+            "value": 1.0
+          },
+          "w_p": {
+            "anchor": {
+              "derived_integrity": null,
+              "id": "urn:web4:entity:measured-adj",
+              "law_weight": 1.0
+            },
+            "basis": "anchored",
+            "value": 1.0
+          }
+        }
+      ],
+      "result": {
+        "mu": 0.614,
+        "sigma": 0.19874774631845932,
+        "strength": 3.0
+      },
+      "subject": "urn:web4:grain:subject-S",
+      "unmeasured_upstream": []
+    }
+  ]
+}
