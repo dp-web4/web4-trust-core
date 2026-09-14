@@ -22,7 +22,11 @@ SUITE = Path(__file__).resolve().parent.parent
 HARNESS = Path(__file__).resolve().parent
 import jcs  # type: ignore
 
-W = "https://web4.io/ontology#"
+# R1 namespace discipline: every term this suite mints lives in the
+# exploration's own namespace, never in the standard's ontology namespace
+# (https://web4.io/ontology# is web4-standard's; its terms carry pinned
+# semantics this evaluator does not implement).
+W = "https://web4.io/trust-derivation#"
 XSD = "http://www.w3.org/2001/XMLSchema#"
 MRH = "urn:web4:mrh:interactive-dev"
 ANCHOR = "urn:web4:entity:measured-adj"
@@ -46,25 +50,25 @@ def base_spec(spec_id: str, observation_nodes: str) -> dict:
     return {
         "spec_id": spec_id,
         "core": {"name": "web4-trust-core", "semantics": 1},
-        "prefixes": {"web4": W, "xsd": XSD},
+        "prefixes": {"w4td": W, "xsd": XSD},
         "ontology": {
-            "hasObservation": "web4:hasObservation",
-            "dimension": "web4:dimension",
-            "adjudicatedBy": "web4:adjudicatedBy",
-            "confidence": "web4:confidence",
-            "dependsOn": "web4:dependsOn",
-            "height": "web4:height",
-            "mrh": "web4:mrh",
+            "hasObservation": "w4td:hasObservation",
+            "dimension": "w4td:dimension",
+            "adjudicatedBy": "w4td:adjudicatedBy",
+            "confidence": "w4td:confidence",
+            "dependsOn": "w4td:dependsOn",
+            "height": "w4td:height",
+            "mrh": "w4td:mrh",
         },
         "dimensions": {
-            "web4:Validity": {
+            "w4td:BoundaryConformance": {
                 "subDimensions": [
-                    "web4:BoundaryResponse",
-                    "web4:CorrectionAcceptance",
-                    "web4:EscalationProportionality",
+                    "w4td:BoundaryResponse",
+                    "w4td:CorrectionAcceptance",
+                    "w4td:EscalationProportionality",
                 ]
             },
-            "web4:Integrity": {"subDimensions": ["web4:AdjudicationQuality"]},
+            "w4td:Integrity": {"subDimensions": ["w4td:AdjudicationQuality"]},
         },
         "parameters": {
             "prior_alpha": 1.0,
@@ -78,8 +82,8 @@ def base_spec(spec_id: str, observation_nodes: str) -> dict:
         "evidence_rules": [
             {
                 "match": {
-                    "web4:method": "web4:Adjudication",
-                    "web4:outcome": "web4:Upheld",
+                    "w4td:method": "w4td:Adjudication",
+                    "w4td:outcome": "w4td:Upheld",
                 },
                 "confidence": 1.0,
             }
@@ -154,12 +158,12 @@ def gen_skolemized_vector() -> None:
 #    binding changes. Uses the blank-node graph (general RDFC-1.0 path).
 # --------------------------------------------------------------------------
 
-BLANK_NODE_GRAPH_HASH = "ba8b2deb20e0ec6be26f27e250b43f63945dcec3c0895158df2bce37128a84d4"
+BLANK_NODE_GRAPH_HASH = "a4f8b66fe8c89ccef71d34f2592c95076156000ec4181a4a882d1e69a4eb147a"
 
 
 def gen_v6b_receipt() -> None:
     out = SUITE / "vectors" / "receipts" / "v6b"
-    spec = base_spec("web4-trust-core-conformance-v6b-draft1", "blank-node")
+    spec = base_spec("web4-trust-core-conformance-v6b-draft2", "blank-node")
     law_hash, spec_bytes = law_hash_of(spec)
 
     receipt = {
@@ -171,7 +175,7 @@ def gen_v6b_receipt() -> None:
         "scores": [
             {
                 "subject": "urn:web4:grain:subject-S",
-                "dimension": "web4:BoundaryResponse",
+                "dimension": "w4td:BoundaryResponse",
                 "result": {"mu": 0.64, "sigma": 0.24, "strength": 1.0},
                 "evidence": [
                     {
@@ -186,7 +190,7 @@ def gen_v6b_receipt() -> None:
             },
             {
                 "subject": "urn:web4:grain:member-M",
-                "dimension": "web4:BoundaryResponse",
+                "dimension": "w4td:BoundaryResponse",
                 "result": {
                     "mu": 0.5689655172413793,
                     "sigma": 0.27178483084735455,
@@ -260,7 +264,7 @@ def v3_quads() -> list:
 
 def gen_v3_receipt() -> None:
     out = SUITE / "vectors" / "receipts" / "v3"
-    spec = base_spec("web4-trust-core-conformance-v3-draft1", "skolemized-iri")
+    spec = base_spec("web4-trust-core-conformance-v3-draft2", "skolemized-iri")
     spec["trust_anchors"] = []  # no anchors => adjudicator-X is unmeasured
     law_hash, spec_bytes = law_hash_of(spec)
 
@@ -278,7 +282,7 @@ def gen_v3_receipt() -> None:
         "scores": [
             {
                 "subject": V3_SUBJECT,
-                "dimension": "web4:BoundaryResponse",
+                "dimension": "w4td:BoundaryResponse",
                 "result": None,
                 "evidence": [
                     {
@@ -355,7 +359,7 @@ def v4b_quads() -> list:
 
 def gen_v4b_receipt() -> None:
     out = SUITE / "vectors" / "receipts" / "v4b"
-    spec = base_spec("web4-trust-core-conformance-v4b-draft1", "skolemized-iri")
+    spec = base_spec("web4-trust-core-conformance-v4b-draft2", "skolemized-iri")
     spec["trust_anchors"] = [
         {"id": "urn:web4:entity:operator", "law_weight": 1.0},
         {"id": "urn:web4:entity:measured-adj", "law_weight": 1.0},
@@ -376,7 +380,7 @@ def gen_v4b_receipt() -> None:
         "scores": [
             {
                 "subject": "urn:web4:grain:member-M",
-                "dimension": "web4:BoundaryResponse",
+                "dimension": "w4td:BoundaryResponse",
                 "result": {"mu": 0.8, "sigma": 0.1632993161855452, "strength": 3.0},
                 "evidence": [
                     {
@@ -392,7 +396,7 @@ def gen_v4b_receipt() -> None:
             },
             {
                 "subject": "urn:web4:grain:operator",
-                "dimension": "web4:Integrity",
+                "dimension": "w4td:Integrity",
                 "result": {
                     "mu": 0.3333333333333333,
                     "sigma": 0.23570226039551584,
@@ -478,7 +482,7 @@ def beta_fold(cs: list, params: dict) -> dict:
 
 def gen_v7_vector() -> None:
     out = SUITE / "vectors" / "receipts" / "v7-fold-order"
-    spec = base_spec("web4-trust-core-conformance-v7-fold-order-draft1", "skolemized-iri")
+    spec = base_spec("web4-trust-core-conformance-v7-fold-order-draft2", "skolemized-iri")
     law_hash, spec_bytes = law_hash_of(spec)
 
     quads = v7_quads()
@@ -502,7 +506,7 @@ def gen_v7_vector() -> None:
         "scores": [
             {
                 "subject": "urn:web4:grain:subject-S",
-                "dimension": "web4:BoundaryResponse",
+                "dimension": "w4td:BoundaryResponse",
                 "result": result,
                 "evidence": [
                     {

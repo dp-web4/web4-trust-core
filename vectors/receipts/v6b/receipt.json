@@ -7,8 +7,8 @@
     "name": "web4-trust-core",
     "version": "claude-code-conformance-2026-07-24"
   },
-  "graph_hash": "ba8b2deb20e0ec6be26f27e250b43f63945dcec3c0895158df2bce37128a84d4",
-  "law_hash": "c8c857bf2621523160d9a1a3709a0f55aade00cd70035ed7788d18ae28b81e31",
+  "graph_hash": "a4f8b66fe8c89ccef71d34f2592c95076156000ec4181a4a882d1e69a4eb147a",
+  "law_hash": "689aada3a11e268c9f0d1add6eb5a5fcff763af0652236fb4dcaeb6fb81be441",
   "mrh": "urn:web4:mrh:interactive-dev",
   "parameters": {
     "dependency_discount_per_hop": 0.5,
@@ -18,10 +18,10 @@
     "provenance_weight_statistic": "mean",
     "unmeasured_if_total_weight_below": 0.01
   },
-  "receipt_hash": "1c70a7216f39c8a588684dfef5e30a6d5dd54795f614adf5400d68f65fc53db8",
+  "receipt_hash": "ce77217aedbbc90a376b37cea756c12a69274a285d66f50bba76f143bf13e6a6",
   "scores": [
     {
-      "dimension": "web4:BoundaryResponse",
+      "dimension": "w4td:BoundaryResponse",
       "evidence": [
         {
           "confidence": 0.92,
@@ -51,7 +51,7 @@
       "unmeasured_upstream": []
     },
     {
-      "dimension": "web4:BoundaryResponse",
+      "dimension": "w4td:BoundaryResponse",
       "evidence": [
         {
           "confidence": 1.0,

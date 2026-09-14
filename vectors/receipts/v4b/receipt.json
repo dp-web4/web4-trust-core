@@ -7,8 +7,8 @@
     "name": "web4-trust-core",
     "version": "kimi-code-conformance-2026-07-24"
   },
-  "graph_hash": "9b91ff74d197b9d6d629ead48d9945da1a815b7fb0d917337a564a76e7b438ff",
-  "law_hash": "1840e8e39f6ffcab02d0e81b8f43e48084b5c5cd76697e4fca64883da62f5fd5",
+  "graph_hash": "aab3725879d5c39f7f70d3a035ca13e472fe85cf5e6e0b9b5de054e2ceb605b8",
+  "law_hash": "b5473b07ea79ce4cb67248860816dc907290ee8bbdb8f1f1dba5f1bb4234cc6c",
   "mrh": "urn:web4:mrh:interactive-dev",
   "parameters": {
     "dependency_discount_per_hop": 0.5,
@@ -18,10 +18,10 @@
     "provenance_weight_statistic": "mean",
     "unmeasured_if_total_weight_below": 0.01
   },
-  "receipt_hash": "abba650e724bfbed68fa1207ba677e0efde567bba5c96b17e9a625cc26572408",
+  "receipt_hash": "2e850d2d5dd7e49e468f16965fc383accb3cb681382721c1fec7c5d161b7c3b2",
   "scores": [
     {
-      "dimension": "web4:BoundaryResponse",
+      "dimension": "w4td:BoundaryResponse",
       "evidence": [
         {
           "confidence": 1.0,
@@ -87,7 +87,7 @@
       "unmeasured_upstream": []
     },
     {
-      "dimension": "web4:Integrity",
+      "dimension": "w4td:Integrity",
       "evidence": [
         {
           "confidence": 0.0,

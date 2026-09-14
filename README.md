@@ -36,7 +36,11 @@ cd harness && python3 check.py    # CONFORMANCE: PASS, exit 0
 
 1. **Vector authority.** A released vector never changes; corrections add a
    new vector (the v6→v6b precedent). CI fails any PR that modifies an
-   existing file under `vectors/`.
+   existing file under `vectors/`. *(One sanctioned exception on record: the
+   2026-07-24 R1 namespace remediation re-pinned every vector in place —
+   executed while consumers = 0 and the Rust port pre-milestone-4, with
+   spec_ids bumped draft1→draft2 so the superseded laws stay citable from git
+   history. Witnessed on thread trust-derivation-rdf.)*
 2. **Bytes, not checkouts.** Every JSON hash is JCS (RFC 8785); spec
    instances are stored in canonical bytes so `sha256(file) == law_hash`.
 3. **Nothing unexercised is law.** A semantics claim without a vector is
@@ -51,6 +55,17 @@ cd harness && python3 check.py    # CONFORMANCE: PASS, exit 0
    whose conformance suite needs no RDF stack is the artifact; verified on a
    second machine (legion, 2026-07-24) with `pyld` absent and all 29 checks
    green. New harness dependencies are a review flag.
+6. **Standard-profile rules R1–R3** (SPEC.md §11): no minting or redefining
+   in the standard's namespace, no aggregating the T3/V3 root triples, every
+   root claim declared standard or society-local. Enforced by
+   `harness/l4_standard_profile.py` (L4, part of `check.py`), whose pinned
+   ontology constants re-derive from a web4 checkout via `--verify-pins`.
+7. **Dependency fence** (legion, 2026-07-24). Any name-bearing artifact —
+   package name, repo name, IRI namespace, published constant — carries an
+   explicit "not load-bearing until X" fence at creation; an identifier
+   becomes irreversible exactly when something starts depending on it. The
+   fence, not a wait state, preserves the option. (Current fences:
+   `rust/README.md` Cargo name; publish gated on dp's rename decision.)
 
 ## Key vectors
 
@@ -77,15 +92,16 @@ cd harness && python3 check.py    # CONFORMANCE: PASS, exit 0
 
 ## Relationship to the existing `web4-trust-core` crate (name collision)
 
-**This repo's name is contested and a rename is pending dp's decision**
-(`web4-trust-derivation` proposed — legion review, thread
-`trust-derivation-rdf`, 2026-07-24). There is a live crate named
+**Resolved (dp ruling 2026-07-24): the repo name stays; the crate name is
+reserved for the incumbent.** The rename legion's review proposed
+(`web4-trust-derivation`, thread `trust-derivation-rdf`, 2026-07-24) was
+declined — nothing is pending on it. There is a live crate named
 `web4-trust-core` at `dp-web4/web4/web4-trust-core` (0.2.0,
 AGPL-3.0-or-later, on the crates.io publish track) whose public surface is
 *stateful and mutable* (`t3_update_from_outcome(&mut T3, …)`,
 `t3_apply_decay(&mut T3, …)`, storage/witnessing traits) — the opposite shape
-from this repo's pure `evaluate(...)`. Until the rename lands, no Cargo
-package in `rust/` may take the name `web4-trust-core` — the Rust port must
+from this repo's pure `evaluate(...)`. No Cargo
+package in `rust/` may ever take the name `web4-trust-core` — the Rust port must
 not create a second, semantically incompatible package under a name that
 already resolves ("name that resolves, meaning undefined" — the finding-8/9
 lesson at package granularity).
@@ -99,6 +115,33 @@ and this evaluator does not supersede it. Supersession is *gated* on the
 standard's normative table and a DerivationSpec disagree) plus a migration
 plan for the live consumers; until that round closes, "one semantics for
 three products" is an aspiration this repo works toward, not a claim it makes.
+
+## Relationship to the `web4-trust-core` crate (dp ruling, 2026-07-24)
+
+The Rust crate `web4-trust-core` (in `dp-web4/web4`, linked by hardbound, constants
+normatively pinned by web4-standard's t3v3 vectors) is the **incumbent** trust
+arithmetic. This repo is the **successor research track** for its derivation half:
+constants-in-code become signed law; mutate-in-place scores become read-time
+derivations with receipts. Succession is earned, not claimed:
+
+- **Merge gate:** a DerivationSpec instance reproduces the incumbent's normative
+  vectors (t3v3-001..012) byte-for-byte as one society's law. When that passes, this
+  work ships as a **new release of the existing crate, under the existing name**.
+  *Status: contested, replacement pending dp.* Legion's L5 audit
+  (`l5-merge-gate-expressibility.py`, exploration thread, 2026-07-24 — reproduced by
+  claude-code on a second machine) finds no gate vector expressible as
+  DerivationSpec law: the update/decay vectors mutate a prior score that
+  `evaluate()` never receives, and after the R1 namespace separation (PR #2) the
+  spec and the standard share no identifiers at all. See
+  `response-legion-2026-07-24-to-dp-ruling-merge-gate-refuted.md` §2.3 and §5 for
+  the two proposed replacements (additive dimension family vs. profile-mapping
+  document).
+- **Nothing in this repo is published to crates.io.** The reference evaluator is a
+  conformance artifact, not a distributable library.
+- **The Rust reference port's Cargo package name MUST NOT be `web4-trust-core`**
+  (use `web4-trust-derivation-ref`). The crate name stays with the incumbent until
+  the merge gate passes — so incumbent + evaluator can coexist in one dependency
+  graph during migration with no collision.
 
 ## Provenance
 

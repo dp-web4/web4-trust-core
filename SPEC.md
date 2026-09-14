@@ -108,10 +108,10 @@ costs 40 bytes.)*
 
 ```json
 "dimensions": {
-  "web4:Validity":  {"subDimensions": ["web4:BoundaryResponse",
-                                        "web4:CorrectionAcceptance",
-                                        "web4:EscalationProportionality"]},
-  "web4:Integrity": {"subDimensions": ["web4:AdjudicationQuality"]}
+  "w4td:BoundaryConformance":  {"subDimensions": ["w4td:BoundaryResponse",
+                                        "w4td:CorrectionAcceptance",
+                                        "w4td:EscalationProportionality"]},
+  "w4td:Integrity": {"subDimensions": ["w4td:AdjudicationQuality"]}
 }
 ```
 
@@ -165,7 +165,7 @@ the V1–V5 golden output; a trust-core implementation must not expose it.
 
 ```json
 "evidence_rules": [
-  {"match": {"web4:method": "web4:Adjudication", "web4:outcome": "web4:Upheld"},
+  {"match": {"w4td:method": "w4td:Adjudication", "w4td:outcome": "w4td:Upheld"},
    "confidence": 1.0}
 ]
 ```
@@ -176,7 +176,7 @@ rule in an honest society's law. `match` pairs are predicate → value, all requ
 the observation node after prefix resolution.
 
 **Open fork (for the next round, needs a vector):** the current vectors carry
-`web4:confidence` directly in the graph, projected upstream; `evidence_rules` is the
+`w4td:confidence` directly in the graph, projected upstream; `evidence_rules` is the
 law's statement of how the projection assigns it. Two candidate semantics:
 
 - (a) *projection-applies-rules*: evaluate() trusts graph confidence; rules are
@@ -248,7 +248,7 @@ anchored receipt, but no draft defined it — a conforming implementation could 
 what to emit. Normative definition:
 
 > When `basis` is `anchored`, `derived_integrity` is the anchor's own derived
-> `web4:Integrity` (per `provenance_weight_statistic`) computed **strictly below the
+> `w4td:Integrity` (per `provenance_weight_statistic`) computed **strictly below the
 > observation's height** — the same stratified computation the measured path uses — or
 > `null` if unmeasured there. It never feeds `w_p.value` (law_weight governs anchored
 > weight); it is the per-observation anchor-drift signal, made normative in bytes.
@@ -256,7 +256,7 @@ what to emit. Normative definition:
 V4b's `null` is *correct* under this definition: member-M's observations sit at height
 10 and the operator's Integrity evidence at height 20, so at height 10 the drift was
 not yet measurable. V4b's drift visibility comes from the side-by-side
-`operator web4:Integrity` score entry, which is computed over the full `chain_range`.
+`operator w4td:Integrity` score entry, which is computed over the full `chain_range`.
 
 *(Design note 3, refutable: the alternative is dropping the field and relying solely on
 side-by-side score entries. Kept because per-observation drift and receipt-level drift
@@ -269,8 +269,8 @@ A score's `evidence` lists canonical graph observations as-is; each observation'
 dimension is recoverable from the graph bound by `graph_hash`. The score's `dimension`
 field is the evaluated dimension. Intermediate child scores are derivable, not
 asserted, and are NOT surfaced as receipt entries unless the child is itself an
-evaluated dimension of the receipt. (V4b's `operator web4:Integrity` folds one
-`web4:AdjudicationQuality` observation this way.)
+evaluated dimension of the receipt. (V4b's `operator w4td:Integrity` folds one
+`w4td:AdjudicationQuality` observation this way.)
 
 ### Reserved vectors
 
@@ -283,8 +283,44 @@ evaluated dimension of the receipt. (V4b's `operator web4:Integrity` folds one
   parent and child-score aggregation produce identical bytes; two children with
   different strengths make the §3 aggregation formula byte-visible.
 
-## 11. Complete example
+## 11. Standard-profile rules (R1–R3) — normative
+
+Adopted from legion's web4-standard reconciliation round (thread
+trust-derivation-rdf, 2026-07-24), replacing the earlier declared-override
+steward position (refuted: the DerivationSpec parameter surface and the
+standard's §10.2 invariant table are disjoint — there is no row an override
+could name). Checked mechanically by `harness/l4_standard_profile.py` (L4),
+which runs as part of `check.py`.
+
+**R1 — Namespace discipline.** A DerivationSpec MUST NOT use an IRI in
+`https://web4.io/ontology#` (the web4-standard namespace) unless the standard
+defines that term AND the law uses it per the standard's pinned semantics.
+Society-local and exploration-local terms live in a local namespace — this
+suite's is `https://web4.io/trust-derivation#` (`w4td:`). Note the trap that
+motivated the rule: this suite originally derived `web4:Validity` (a V3 root
+whose calculation §10.2 pins as `1.0 if value_transferred else 0.0`) as a
+Beta-posterior parent — same IRI, incompatible meaning, live in every shipped
+vector. Reuse of a *defined* term is still not automatically safe:
+`web4:dimension` is declared `rdfs:domain web4:DimensionScore`, so attaching
+it to observation nodes entails they are DimensionScores — this suite
+therefore mints `w4td:dimension` instead (L4f flags reused terms for manual
+domain/range review).
+
+**R2 — Composite fence.** Semantics-1 is **non-normative over T3/V3
+composites**: no parent dimension may aggregate the T3 or V3 root triple.
+Composites remain the standard's, computed by its fixed weights
+(0.4/0.3/0.3, 0.3/0.35/0.35) over whatever produced the root values. The two
+documents compose — trust-core derives dimension values from evidence; the
+standard composites them. (The operators genuinely differ: strength-weighted
+mean vs fixed-weight linear sum; semantics-1 has no weight slot to override.)
+
+**R3 — Root registration.** Any dimension that is a parent and nobody's child
+is a *root claim* and must be legible as either a standard root (R1/R2 then
+apply) or a society-local root in a local namespace. `w4td:Integrity` is this
+suite's declared society-local root for adjudicator provenance.
+
+## 12. Complete example
 
 `vectors/receipts/v7-fold-order/spec.json` is a complete, canonical-bytes instance of
-this syntax (law_hash `e7d63e55…`); `vectors/receipts/v6b/spec.json` is the same law
-in `blank-node` mode (law_hash `c8c857bf…`).
+this syntax (law_hash `31e17610…`); `vectors/receipts/v6b/spec.json` is the same law
+in `blank-node` mode (law_hash `689aada3…`).

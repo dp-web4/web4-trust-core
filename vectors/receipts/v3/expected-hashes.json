@@ -1,6 +1,6 @@
 {
-  "law_hash": "f1d95bd29485858c45a48550baaf74d78e7af6c41fa8ee1bccd3e459a0f145d8",
-  "graph_hash": "096d39dfce01727822d9c20a860558c502223ff355097da8563c6b02644abf70",
-  "receipt_hash": "38f219287b7168ea12e88ccc0ed25a37be43a4a1b50bb5c56f1a1ae9ecaeb180",
+  "law_hash": "8b6765bb183df851c9425b1acec857699f9033813c62cc3ad749118b45293d39",
+  "graph_hash": "46ad96e4bfaa0bd825f5a04c536cafa6b96a93b405d9eb3d09f9f2aa44c552dc",
+  "receipt_hash": "879df83772695fa2ad19170284bbb75caa3ffd9ee2945459244ce17bfd8b7da7",
   "note": "V3 exercises unmeasured_upstream: every observation has an unmeasured adjudicator."
 }
