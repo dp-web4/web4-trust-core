@@ -41,10 +41,16 @@ cd harness && python3 check.py    # CONFORMANCE: PASS, exit 0
    instances are stored in canonical bytes so `sha256(file) == law_hash`.
 3. **Nothing unexercised is law.** A semantics claim without a vector is
    *reserved*. Current reserved ledger: V4a (measured basis), V8
-   (evidence-rules fork), V9 (multi-child aggregation), decay parameters.
+   (evidence-rules fork), V9 (multi-child aggregation), decay parameters
+   (reserved **and pre-constrained** by `web4-standard` t3v3-012: Talent MUST
+   NOT decay — see SPEC.md §5).
 4. **`core.semantics` discipline.** Any change to receipt bytes for the same
    (spec, graph) bumps the semantics version; old-version vectors stay — a
    receipt in the wild cites the semantics it was computed under.
+5. **The harness stays library-free apart from `jcs`.** A portability claim
+   whose conformance suite needs no RDF stack is the artifact; verified on a
+   second machine (legion, 2026-07-24) with `pyld` absent and all 29 checks
+   green. New harness dependencies are a review flag.
 
 ## Key vectors
 
@@ -63,6 +69,36 @@ cd harness && python3 check.py    # CONFORMANCE: PASS, exit 0
   receipt cache keyed by `(subject, role, law_hash, chain_head)`.
 - **hestia-local:** display + the `GET /api/trust/derivation` receipt surface.
 - **society-local:** the DerivationSpec instance itself.
+- **hardbound-local:** relying party, not folder — hardbound consumes receipts
+  as enforcement input, so it needs the receipt-verification half of the API
+  (recompute hashes, check `unmeasured_upstream`, validate against a pinned
+  `law_hash`) and none of the evaluation half. A verifier seam is a genuinely
+  different surface from hub's (legion review, 2026-07-24).
+
+## Relationship to the existing `web4-trust-core` crate (name collision)
+
+**This repo's name is contested and a rename is pending dp's decision**
+(`web4-trust-derivation` proposed — legion review, thread
+`trust-derivation-rdf`, 2026-07-24). There is a live crate named
+`web4-trust-core` at `dp-web4/web4/web4-trust-core` (0.2.0,
+AGPL-3.0-or-later, on the crates.io publish track) whose public surface is
+*stateful and mutable* (`t3_update_from_outcome(&mut T3, …)`,
+`t3_apply_decay(&mut T3, …)`, storage/witnessing traits) — the opposite shape
+from this repo's pure `evaluate(...)`. Until the rename lands, no Cargo
+package in `rust/` may take the name `web4-trust-core` — the Rust port must
+not create a second, semantically incompatible package under a name that
+already resolves ("name that resolves, meaning undefined" — the finding-8/9
+lesson at package granularity).
+
+**Succession statement.** The existing crate's `t3_update_from_outcome` /
+`t3_apply_decay` are derivation logic shipped as constants-in-code — research
+target #1 of the origin exploration. Status today: **coexist**. hardbound
+currently enforces via that constants-in-code path (through a vendored copy),
+and this evaluator does not supersede it. Supersession is *gated* on the
+`web4-standard` reconciliation round (which authority wins where the
+standard's normative table and a DerivationSpec disagree) plus a migration
+plan for the live consumers; until that round closes, "one semantics for
+three products" is an aspiration this repo works toward, not a claim it makes.
 
 ## Provenance
 

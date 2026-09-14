@@ -8,6 +8,17 @@ this revision adds §10 (receipt schema codification: `unmeasured_upstream`,
 (§1–§8) is unchanged from draft 1 — no `law_hash` churn.
 **Seed:** `experiment-kimi-code-receipt-v6b-2026-07-24/spec.json` (adopted and formalized)
 
+> **Normative-scope caveat (legion review, 2026-07-24):** this spec does not yet
+> cite `web4-standard/core-spec/t3-v3-tensors.md`, whose parameter table is
+> introduced as "the authoritative values are those stated in this table" and is
+> bound to `t3v3-0xx` vectors (composite weights, update formula, Talent no-decay,
+> ranges). Until a reconciliation round states which authority wins where a
+> DerivationSpec instance and that table disagree, a spec instance can be fully
+> conforming to this suite while contradicting the standard (e.g. talent weight
+> 0.5 vs t3v3-001's 0.4). This spec is therefore **not normative over parameters
+> the standard's table pins** — reconciliation is an open round on the origin
+> thread (`trust-derivation-rdf`), taken by legion.
+
 The DerivationSpec is the **law document** — the thing `law_hash` binds, the thing a
 society amends through witnessed law change, the thing `evaluate(spec, graph, mrh,
 chain_range)` receives as its first argument. This draft freezes its concrete syntax
@@ -126,7 +137,13 @@ which finding 8 already changed this round anyway.)*
 
 Decay parameters (`decay_halflife_days`, `max_weight_per_source_per_halflife`) enter
 the law when the first decay vector lands; until a vector pins their semantics they
-are not law (nothing unexercised in the spec — the step-4 lesson).
+are not law (nothing unexercised in the spec — the step-4 lesson). They are reserved
+**and pre-constrained**: `web4-standard` t3v3-012 states Talent MUST NOT decay
+through inactivity (an implementation already violated this and was caught in audit
+C192-N1), so a decay parameter block cannot be a single uniform per-dimension scalar
+— it needs a per-dimension map with Talent pinned to no-decay, or an explicit
+governance ruling that society law may override a standard MUST. The first decay
+vector inherits this constraint; it is not greenfield.
 
 ## 6. `trust_anchors`
 
