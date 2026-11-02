@@ -9,12 +9,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check out pinned standard ontology
+        uses: actions/checkout@v4
+        with:
+          repository: dp-web4/web4
+          ref: 950eb2514b647a06e0e71f3192cf09f8d8458d28
+          path: .ci-web4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
+      - name: Verify standard root pins against the pinned ontology
+        run: python3 harness/l4_standard_profile.py --verify-pins .ci-web4/web4-standard/ontology
       - name: conformance suite
+        env:
+          WEB4_STANDARD_ONTOLOGY: ${{ github.workspace }}/.ci-web4/web4-standard/ontology
         run: cd harness && python3 check.py
+      - name: legacy-vector negative controls
+        run: cd harness && python3 -m unittest test_legacy_vectors -v
 
   vector-immutability:
     if: github.event_name == 'pull_request'

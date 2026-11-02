@@ -1,0 +1,16 @@
+V7 anti-vector: what a NON-conforming evaluator produces.
+
+Canonical fold order (height asc, obs IRI asc): [0.8, 0.95, 0.32]
+  mu       = 0.614
+  sigma    = 0.19874774631845932
+  strength = 3.0
+
+Reverse fold order: [0.32, 0.95, 0.8]
+  mu       = 0.6140000000000001
+  sigma    = 0.19874774631845935
+  strength = 3.0
+
+Both are 'correct' real-number arithmetic; only the canonical fold
+order yields the pinned receipt bytes. If your evaluator produces the
+reverse-order values, its evidence fold is not sorted by
+(height, canonical node identifier).
