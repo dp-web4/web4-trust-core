@@ -2,9 +2,9 @@
 """Deterministic generator for the pinned conformance artifacts.
 
 Produces (relative to the suite root):
-  vectors/canonicalization/skolemized-sorted-nquads/{input.nq,expected-canonical.nq,expected-hash.txt}
-  vectors/receipts/v6b/{spec.json,receipt.json,receipt.jcs,expected-hashes.json}
-  vectors/receipts/v7-fold-order/{spec.json,input.nq,expected-canonical.nq,receipt.json,receipt.jcs,expected-hashes.json,anti-vector.txt}
+  vectors/r1/canonicalization/skolemized-sorted-nquads/{input.nq,expected-canonical.nq,expected-hash.txt}
+  vectors/r1/receipts/v6b/{spec.json,receipt.json,receipt.jcs,expected-hashes.json}
+  vectors/r1/receipts/v7-fold-order/{spec.json,input.nq,expected-canonical.nq,receipt.json,receipt.jcs,expected-hashes.json,anti-vector.txt}
 
 Everything here is derivable; the committed artifacts are the pinned bytes.
 Requires the `jcs` package (RFC 8785):
@@ -19,6 +19,7 @@ from math import sqrt
 from pathlib import Path
 
 SUITE = Path(__file__).resolve().parent.parent
+VECTORS = SUITE / "vectors" / "r1"
 HARNESS = Path(__file__).resolve().parent
 import jcs  # type: ignore
 
@@ -144,7 +145,7 @@ V6B_SKOLEM_QUADS = [
 
 
 def gen_skolemized_vector() -> None:
-    out = SUITE / "vectors" / "canonicalization" / "skolemized-sorted-nquads"
+    out = VECTORS / "canonicalization" / "skolemized-sorted-nquads"
     input_bytes = ("\n".join(V6B_SKOLEM_QUADS) + "\n").encode()
     canonical_bytes = ("\n".join(sorted(V6B_SKOLEM_QUADS)) + "\n").encode()
     write(out / "input.nq", input_bytes)
@@ -162,7 +163,7 @@ BLANK_NODE_GRAPH_HASH = "a4f8b66fe8c89ccef71d34f2592c95076156000ec4181a4a882d1e6
 
 
 def gen_v6b_receipt() -> None:
-    out = SUITE / "vectors" / "receipts" / "v6b"
+    out = VECTORS / "receipts" / "v6b"
     spec = base_spec("web4-trust-core-conformance-v6b-draft2", "blank-node")
     law_hash, spec_bytes = law_hash_of(spec)
 
@@ -263,7 +264,7 @@ def v3_quads() -> list:
 
 
 def gen_v3_receipt() -> None:
-    out = SUITE / "vectors" / "receipts" / "v3"
+    out = VECTORS / "receipts" / "v3"
     spec = base_spec("web4-trust-core-conformance-v3-draft2", "skolemized-iri")
     spec["trust_anchors"] = []  # no anchors => adjudicator-X is unmeasured
     law_hash, spec_bytes = law_hash_of(spec)
@@ -358,7 +359,7 @@ def v4b_quads() -> list:
 
 
 def gen_v4b_receipt() -> None:
-    out = SUITE / "vectors" / "receipts" / "v4b"
+    out = VECTORS / "receipts" / "v4b"
     spec = base_spec("web4-trust-core-conformance-v4b-draft2", "skolemized-iri")
     spec["trust_anchors"] = [
         {"id": "urn:web4:entity:operator", "law_weight": 1.0},
@@ -481,7 +482,7 @@ def beta_fold(cs: list, params: dict) -> dict:
 
 
 def gen_v7_vector() -> None:
-    out = SUITE / "vectors" / "receipts" / "v7-fold-order"
+    out = VECTORS / "receipts" / "v7-fold-order"
     spec = base_spec("web4-trust-core-conformance-v7-fold-order-draft2", "skolemized-iri")
     law_hash, spec_bytes = law_hash_of(spec)
 

@@ -36,11 +36,12 @@ cd harness && python3 check.py    # CONFORMANCE: PASS, exit 0
 
 1. **Vector authority.** A released vector never changes; corrections add a
    new vector (the v6→v6b precedent). CI fails any PR that modifies an
-   existing file under `vectors/`. *(One sanctioned exception on record: the
-   2026-07-24 R1 namespace remediation re-pinned every vector in place —
-   executed while consumers = 0 and the Rust port pre-milestone-4, with
-   spec_ids bumped draft1→draft2 so the superseded laws stay citable from git
-   history. Witnessed on thread trust-derivation-rdf.)*
+   existing file under `vectors/`. The proposed R1 namespace remediation keeps
+   the draft1 files at their original paths and adds the draft2 set under
+   `vectors/r1/`. The harness checks both: draft1 is pinned and exercised as
+   historical evidence using a frozen evaluator, while the standard-profile
+   audit applies to R1 (draft1's known namespace collision is why R1 exists).
+   The separate R1 governance decision remains open.
 2. **Bytes, not checkouts.** Every JSON hash is JCS (RFC 8785); spec
    instances are stored in canonical bytes so `sha256(file) == law_hash`.
 3. **Nothing unexercised is law.** A semantics claim without a vector is

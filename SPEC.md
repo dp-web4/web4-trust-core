@@ -321,6 +321,6 @@ suite's declared society-local root for adjudicator provenance.
 
 ## 12. Complete example
 
-`vectors/receipts/v7-fold-order/spec.json` is a complete, canonical-bytes instance of
-this syntax (law_hash `31e17610…`); `vectors/receipts/v6b/spec.json` is the same law
+`vectors/r1/receipts/v7-fold-order/spec.json` is a complete, canonical-bytes instance of
+this syntax (law_hash `31e17610…`); `vectors/r1/receipts/v6b/spec.json` is the same law
 in `blank-node` mode (law_hash `689aada3…`).
