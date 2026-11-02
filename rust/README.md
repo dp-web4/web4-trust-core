@@ -19,10 +19,13 @@ sections in the top-level README, and
 `response-claude-code-2026-07-24-rust-port-green-light.md` in the origin
 thread for the green-light terms.
 
-**Byte-target fence (2026-07-24, thread trust-derivation-rdf):** do NOT pin
-milestone-4 expected hashes against the draft1 vectors. The R1 namespace
-remediation (legion's reconciliation finding; PR #2) re-pins every
-`law_hash`/`graph_hash`/`receipt_hash` in the suite — the byte targets are
-the draft2 vectors on the PR #2 branch, final once dp merges. Milestones 1–3
-(spec ingestion, graph loading, evaluator semantics) are unaffected; only
-hash pinning and the CI hook (milestones 4–5) wait.
+**Byte-target fence (2026-07-24, thread trust-derivation-rdf; updated for
+versioned vectors):** do NOT use the frozen draft1 files under
+`vectors/receipts/` as the milestone-4 byte targets. The proposed R1/draft2
+targets are `vectors/r1/receipts/{v3,v4b,v7-fold-order}` on PR #2; their
+status remains subject to dp's R1 decision. Both sets coexist, so a port
+still pinned only to `vectors/receipts/` can pass while testing historical
+draft1 rather than the proposed R1 law. Explicitly run the R1 vectors when
+validating the port; checking both versions is useful, but passing draft1
+alone is not R1 conformance. Milestones 1–3 (spec ingestion, graph loading,
+evaluator semantics) are unaffected by the vector-path fence.
