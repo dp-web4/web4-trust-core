@@ -27,6 +27,8 @@ jobs:
         run: cd harness && python3 check.py
       - name: legacy-vector negative controls
         run: cd harness && python3 -m unittest test_legacy_vectors -v
+      - name: R1 operator semantic-ruling regression
+        run: cd harness && python3 -m unittest test_r1_operator_semantics -v
 
   vector-immutability:
     if: github.event_name == 'pull_request'
